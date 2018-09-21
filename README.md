@@ -1,6 +1,5 @@
-## graZier96.github.io
-personal blog
+## graZier96的博客
 
 ---
 
-#### **[主页]()**
+#### **[欢迎访问](https://graZier96.github.io)**
