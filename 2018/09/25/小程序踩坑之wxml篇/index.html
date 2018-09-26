@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="zh-en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="graZier96"><meta name="renderer" content="webkit"><meta name="copyright" content="graZier96"><meta name="keywords" content="graZier96's blog"><meta name="description" content="一个神奇的小站[博客、笔记]"><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>小程序踩坑之wxml篇 · graZier96 Blog</title><link rel="stylesheet" href="/css/style.css?v=2018.7.9"><link rel="stylesheet" href="/css/animation.css?v=2018.7.9"><link rel="icon" href="/img/assets/head.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2018.7.9" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/head.jpg"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">graZier96</div><div class="profile-signature">a salted fish</div><div class="friends"><div>FRIENDS</div><span><a href="//heshangbuxitou.github.io/" target="_black">老司机</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">graZier96's Blog</a></div><div class="intro-nav-label-box"><a href="/">主页</a><a href="/about/">关于</a><a href="/archives/">归档</a><a href="/tags/">标签</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">主页</a><a href="/about/">关于</a><a href="/archives/">归档</a><a href="/tags/">标签</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">小程序踩坑之wxml篇</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2018/09/25</span></span><span class="busuanzi-pv" id="busuanzi_container_page_pv"><i class="post-intro-calendar fa fa-user-o"></i><span id="busuanzi_value_page_pv"></span></span><span class="post-intro-tags"><a class="intro-tag fa fa-tag" href="javascript:void(0)" date-tags="小程序"> 小程序</a></span></div><div class="post-intro-read"><span> Word count: <span class="post-count">697</span> | Reading time: <span class="post-count">2</span>min</span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&emsp;&emsp;个人在进公司前没有接触过<code>微信小程序</code>的开发，但因公司需要以及小程序那一套和<code>html、css、js</code>基本一致，也就对着官方文档慢慢做了起来。然而在实际工作中，发现很多效果或者功能的<code>API</code>在官方文档中被描述的并不是很详细，枚举的例子也不够好（个人感觉），因此需要开发者自己去尝（cai）试（keng）。本人也很幸运（雾）的成为其中一员，所以个人将开发遇到的’坑’记录下来。</p>
+<blockquote>
+<p><a href="https://developers.weixin.qq.com/miniprogram/dev/" target="_blank" rel="noopener">官方文档</a></p>
+</blockquote>
+<hr>
+<h2 id="何为wxml"><a href="#何为wxml" class="headerlink" title="何为wxml"></a>何为<code>wxml</code></h2><p>这里引用官方文档的说法：</p>
+<blockquote>
+<p>&emsp;&emsp;从事过网页编程的人知道，网页编程采用的是 <code>HTML + CSS + JS</code> 这样的组合，其中 <code>HTML</code> 是用来描述当前这个页面的结构，<code>CSS</code> 用来描述页面的样子，<code>JS</code> 通常是用来处理这个页面和用户的交互。同样道理，在小程序中也有同样的角色，其中 <code>WXML</code> 充当的就是类似 <code>HTML</code> 的角色。和 <code>HTML</code> 非常相似，<code>WXML</code> 由标签、属性等等构成，但是也有很多不一样的地方。  </p>
+<ol>
+<li>标签名字有点不一样。</li>
+<li>多了一些 wx:if 这样的属性。  <blockquote>
+<p><strong><a href="https://developers.weixin.qq.com/miniprogram/dev/quickstart/basic/file.html#wxml-%E6%A8%A1%E6%9D%BF" target="_blank" rel="noopener">详细说明参见</a></strong></p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<p>&emsp;&emsp;小程序的<code>wxml</code>可以看作是<code>组件</code>，它对标签封装了一些<strong>属性</strong>，我们通过设置这些<strong>属性</strong>，就能轻松的实现基础的业务功能。</p>
+<hr>
+<h2 id="textarea"><a href="#textarea" class="headerlink" title="textarea"></a>textarea</h2><ul>
+<li>高层级<br>&emsp;&emsp;在项目中遇到一个需求，点击按钮弹出好友列表，然后选择一位发送请求。然而实际操作中，当我点击好友头像的时候，下面的<code>textarea</code>总是会获取焦点。后来经过查询得知，<code>textarea</code>属于原生组件，拥有最高的层级。也就是说，它总是在最上层。<br>&emsp;&emsp;最后我的解决方法是给<code>textarea</code>添加<code>hidden</code>属性，默认设为<code>false</code>，弹出好友列表时设为<code>true</code>，请求发送完毕后设为<code>false</code>。<blockquote>
+<p>同样属于原生组件的还有<code>camera</code>、<code>canvas</code>、<code>input</code>、<code>live-player</code>、<code>live-pusher</code>、<code>map</code>、<code>video</code>。</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>‘抢夺’<code>input</code>的焦点<br>&emsp;&emsp;为什么叫‘抢夺’呢？请看下面这个例子：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;view&gt;</span><br><span class="line">      &lt;input&gt;&lt;/input&gt;</span><br><span class="line">      &lt;input&gt;&lt;/input&gt;</span><br><span class="line">      &lt;textarea&gt;&lt;/textarea&gt;</span><br><span class="line">&lt;/view&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>&emsp;&emsp;当我点击第二个<code>input</code>的时候，焦点有时会从<code>input</code>跳到<code>textarea</code>，触发概率在10%左右的样子，而且我发现只会在微信开发者工具上有这个bug，在手机上测试并没有遇到，所以这倒是无所谓。<br>&emsp;&emsp;我在网上看见别人也遇到了这个问题，官方给的回答是：暂时还没有很好的方法解决。</p>
+<hr>
+<p>待更新…</p>
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="https://github.com/graZier96/graZier96.github.io.git">graZier96</a></p><p> <span>Link:  </span><a href="https://github.com/graZier96/graZier96.github.io.git/2018/09/25/小程序踩坑之wxml篇/">https://github.com/graZier96/graZier96.github.io.git/2018/09/25/小程序踩坑之wxml篇/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/3.0">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2018/09/21/居中布局/" title="css学习之一##居中布局"><span>NextPost ></span><br><span class="nextTitle">css学习之一##居中布局</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#何为wxml"><span class="toc-number">2.</span> <span class="toc-text">何为wxml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#textarea"><span class="toc-number">3.</span> <span class="toc-text">textarea</span></a></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
