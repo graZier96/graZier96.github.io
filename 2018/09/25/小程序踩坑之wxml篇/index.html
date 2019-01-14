@@ -130,7 +130,7 @@
 </li>
 <li><p>找到原因<br>&emsp;&emsp;只有二维码经过tap切换后不显示了，那么问题就出在这儿。二维码是由<code>canvas</code>原生组件配合<code>Qrcode</code>插件生成的，是不是原生组件的问题呢？抱着问题我测试了下：将每个tap分页都加上个<code>input</code>原生组件，结果<code>input</code>都能正常显示。<br>&emsp;&emsp;接着我将<code>wx:if</code>等都换成<code>hidden</code>，结果二维码、<code>input</code>和其他数据全都正常显示。</p>
 </li>
-<li><p>总结<br>&emsp;&emsp;1、官方文档已经说明了<code>wx:if</code>和<code>hidden</code>两者的区别，但只从效率方面说明了原由：<code>hidden</code>适用于频繁切换的场景，<code>wx:if</code>适用于初次加载的场景。<br>&emsp;&emsp;2、<code>wx:if</code>不仅不适用于频繁切换的场景，而且还会引起<code>canvas</code>组件显示异常的bug。</p>
+<li><p>总结<br>&emsp;&emsp;1、官方文档已经说明了<code>wx:if</code>和<code>hidden</code>两者的区别，但只从效率方面说明了原由：<code>hidden</code>适用于频繁切换的场景，<code>wx:if</code>适用于初次加载后页面元素就不变的场景。<br>&emsp;&emsp;2、<code>wx:if</code>不仅不适用于频繁切换的场景，而且还会引起<code>canvas</code>组件显示异常的bug。</p>
 </li>
 </ul>
 <p><em>更新于2018-10-15</em></p>
